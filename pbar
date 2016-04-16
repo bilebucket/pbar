@@ -6,7 +6,6 @@
 #   * Convert widget functions into instances of an actual widget class
 #   * Make the whole program less hacky
 #   * Fix battery widget
-#   * Fix Workspaces
 # ============================================================================
 
 import arrow
@@ -18,7 +17,7 @@ import subprocess
 INTERVAL = 1
 NET = 0
 LAST_NET = 0
-DESKTOPS = int(subprocess.getoutput('xdotool get_num_desktops')) + 1
+DESKTOPS = int(subprocess.getoutput('xdotool get_num_desktops'))
 BATTERY_FILE = '/tmp/battery'
 
 colors = [
@@ -27,6 +26,7 @@ colors = [
     '%{B#433a41}%{F#FF0000}'
 ]
 
+# Font Awesome icons for battery widgets
 batt_icons = {
     95: '\uf240',
     70: '\uf241',
@@ -35,10 +35,7 @@ batt_icons = {
     0: '\uf244'
 }
 
-# To be fixed!
-# These are the names of your workspaces
 workspaces = [
-    'I am not here!', # Uhh, try removing this line for bugs
     'Browser',
     'Code',
     'Terminal',
@@ -50,8 +47,8 @@ def get_desktop():
     # Why this function?
     # Well, I use spectrwm, and this seems to be the easiest way to get the desktops
     o = ''
-    current = int(subprocess.getoutput('xdotool get_desktop')) + 1
-    for d in range(1, DESKTOPS):
+    current = int(subprocess.getoutput('xdotool get_desktop'))
+    for d in range(0, DESKTOPS):
         if current != d:
             o += colors[0]  + '{} '.format(workspaces[d])
         else:
