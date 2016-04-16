@@ -8,7 +8,7 @@ pbar is a simple system status script written in python, and it's meant to be pi
 
 I made pbar for fun.
 
-## Can *I* use it?
+## Can I use it?
 
 Sure! Go nuts with it! But a word of warning: there are a some dependencies:
 
@@ -19,7 +19,7 @@ Sure! Go nuts with it! But a word of warning: there are a some dependencies:
 
 Also I wrote the script very specifically for my own system configuration, so additional setup (e.g. cronjobs to write battery status to a file) might be needed. Oh, and the script can be quite error prone, plus I really don't know how I could optimize it. *Cough Cough! Pull requests*
 
-### How do *I* use it?
+### How do I use it?
 
   * Read the sources of pbar and bar.sh
   * install dependencies
