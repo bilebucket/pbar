@@ -1,0 +1,129 @@
+#!/usr/bin/env python3
+
+# ============================================================================
+# TODO:
+#   * Refactor, a lot
+#   * Convert widget functions into instances of an actual widget class
+#   * Make the whole program less hacky
+#   * Fix battery widget
+#   * Fix Workspaces
+# ============================================================================
+
+import arrow
+import psutil
+import time
+import sys
+import subprocess
+
+INTERVAL = 1
+NET = 0
+LAST_NET = 0
+DESKTOPS = int(subprocess.getoutput('xdotool get_num_desktops')) + 1
+BATTERY_FILE = '/tmp/battery'
+
+colors = [
+    '%{B#433a41}%{F#BBBBBB}',
+    '%{B#4b4d5a}%{F#EEEEEE}',
+    '%{B#433a41}%{F#FF0000}'
+]
+
+batt_icons = {
+    95: '\uf240',
+    70: '\uf241',
+    45: '\uf242',
+    20: '\uf243',
+    0: '\uf244'
+}
+
+workspaces = [
+    'I am not here',
+    'Browser',
+    'Code',
+    'Terminal',
+    'Music',
+    'Misc',
+]
+
+def get_desktop():
+    o = ''
+    current = int(subprocess.getoutput('xdotool get_desktop')) + 1
+    for d in range(1, DESKTOPS):
+        if current != d:
+            o += colors[0]  + '{} '.format(workspaces[d])
+        else:
+            o += colors[1] + ' {} {} '.format(workspaces[d], colors[0])
+    return o
+
+def get_sep():
+    return ' | '
+
+def get_net():
+    global NET, LAST_NET
+    LAST_NET = NET
+    NET = psutil.net_io_counters(pernic=False)[1]
+    return '{}kbps'.format(int((NET - LAST_NET) % 1024))
+
+def get_mem():
+    mem = (psutil.virtual_memory()[2])
+    c = colors[0]
+    if mem > 75.0:
+        c = colors[2]
+    return c + ' RAM: {}% '.format(mem) + colors[0]
+
+def get_cpu():
+    cpu = psutil.cpu_percent(interval=None)
+    c = colors[0]
+    if cpu > 75.0:
+        c = colors[2]
+    return '%{r}' + c + ' CPU: {}% '.format(cpu) + colors[0]
+
+def get_time():
+    return '%{c}' + colors[1] + ' ' + str(arrow.now().format('DD-MM-YYYY HH:mm')) + ' ' + colors[0]
+
+
+def get_window():
+    o = '{}'.format(subprocess.getoutput('xdotool getactivewindow getwindowname')[:50:])
+    if '_NET_ACTIVE_WINDOW' not in o:
+        return o
+    return ''
+
+# TO BE FIXED!
+def get_batt():
+    batt_line = ''
+    with open(BATTERY_FILE, 'r') as f:
+        batt_line = f.readline().strip()
+    batt_line = batt_line.split(', ')[1]
+    return batt_line
+
+def get_padd():
+    return '  '
+
+BAR = [
+    get_padd,
+    get_desktop,
+    get_sep,
+    get_window,
+    get_time,
+    get_cpu,
+    get_sep,
+    get_mem,
+    get_sep,
+    get_net,
+#    get_sep,
+#    get_batt,
+    get_padd
+]
+
+def print_status():
+    out = ''
+    for w in BAR:
+        out += w()
+    sys.stdout.write('%{l}' + colors[0] + out + '\n')
+    sys.stdout.flush()
+
+try:
+    while True:
+        print_status()
+        time.sleep(INTERVAL)
+except KeyboardInterrupt:
+    pass
