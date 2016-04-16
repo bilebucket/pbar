@@ -26,4 +26,4 @@ Also I wrote the script very specifically for my own system configuration, so ad
   * Test run bar.sh
   * modify to your liking
 
-If you actually try it and fix, modify, add something please, feel free to leave a pull request.
+If you actually try it and fix, modify or add something, **please** feel free to leave a pull request.
